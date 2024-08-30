@@ -4,6 +4,7 @@ import { AppointmentModule } from './modules/appointment/appointment.module'
 import { SlotModule } from './modules/slot/slot.module'
 import { DatabaseModule } from './database/database.module'
 import configuration from './config/configuration'
+import { InitializationModule } from './modules/initialization/initialization.module'
 
 @Module({
 	imports: [
@@ -15,6 +16,7 @@ import configuration from './config/configuration'
 		DatabaseModule,
 		AppointmentModule,
 		SlotModule,
+		InitializationModule
 	],
 })
 export class AppModule {}
