@@ -53,18 +53,20 @@ $ yarn install
 Before running the project, make sure to set up your database credentials in the `.env.dev` file. Add the following environment variables:
 
 
+```
 DB_HOST=your_database_host
 DB_PORT=your_database_port
 DB_USERNAME=your_database_username
 DB_PASSWORD=your_database_password
 DB_NAME=your_database_name
+  ```
 
 
 Replace the placeholders with your actual database credentials.
 
-## Running the app
+## Compile and run the project
 
-
+```bash
 # development
 $ yarn run start
 
@@ -73,6 +75,7 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+```
 
 ## API Usage
 
