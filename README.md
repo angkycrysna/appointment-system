@@ -77,6 +77,27 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
+## Database Choice: PostgreSQL
+
+For this appointment system, I've chosen PostgreSQL as the database management system. Here's why:
+
+1. **Robust and Reliable**: PostgreSQL is known for its reliability, data integrity, and correctness, making it an excellent choice for systems that require accurate scheduling and data management.
+
+2. **ACID Compliance**: PostgreSQL fully supports ACID (Atomicity, Consistency, Isolation, Durability) properties, ensuring that the appointment data remains consistent and accurate even under high concurrency.
+
+3. **Advanced Features**: PostgreSQL offers advanced features like JSON support, which allows for flexible storage of configuration data, and powerful indexing capabilities for optimized query performance.
+
+4. **Scalability**: As the appointment system grows, PostgreSQL can handle increasing amounts of data and concurrent users efficiently.
+
+5. **Strong Community and Support**: With a large and active community, PostgreSQL benefits from regular updates, extensive documentation, and a wide range of tools and extensions.
+
+6. **TypeORM Compatibility**: PostgreSQL works seamlessly with TypeORM, my chosen ORM, allowing for easy database operations and migrations.
+
+7. **Time and Date Handling**: PostgreSQL has excellent support for date and time operations, which is crucial for an appointment scheduling system.
+
+By leveraging PostgreSQL's features, I ensure that the appointment system is built on a solid, performant, and scalable foundation.
+
+
 ## API Usage
 
 ### Appointments
