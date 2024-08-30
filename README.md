@@ -102,7 +102,7 @@ By leveraging PostgreSQL's features, I ensure that the appointment system is bui
 
 ### Appointments
 
-1. Get Available Slots
+1. Get Available Slots / Generate Slots for a Date if there are no slots
    - Method: GET
    - Endpoint: `/appointments/available-slots/:date`
    - Example: `GET /appointments/available-slots/2024-04-04`
@@ -112,12 +112,12 @@ By leveraging PostgreSQL's features, I ensure that the appointment system is bui
        {
          "date": "2024-04-04",
          "time": "10:00",
-         "available_slots": 1
+         "available_slots": 5 // default slot value is 5, but can be changed via database
        },
        {
          "date": "2024-04-04",
          "time": "10:30",
-         "available_slots": 1
+         "available_slots": 5
        }
      ]
      ```
@@ -173,13 +173,6 @@ By leveraging PostgreSQL's features, I ensure that the appointment system is bui
    - Endpoint: `/config`
    - Response: Current configuration including operational hours, slot duration, etc.
 
-### Slots
-
-1. Get All Slots for a Date
-   - Method: GET
-   - Endpoint: `/slots/:date`
-   - Example: `GET /slots/2024-04-04`
-   - Response: Array of slot objects for the given date
 
 Note: Replace `:date` and `:id` with actual values when making requests. Ensure you're running the application and connected to the database before testing these endpoints.
 

@@ -5,6 +5,9 @@ export class Slot {
 	@PrimaryGeneratedColumn()
 	id: number
 
+	@Column({ type: 'date' })
+	date: Date;
+
 	@Column({ type: 'time' })
 	time: string
 

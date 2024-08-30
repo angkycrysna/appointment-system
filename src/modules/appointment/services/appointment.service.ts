@@ -49,16 +49,45 @@ export class AppointmentService {
 	 * Time Complexity: O(1), assuming constant time for database operations
 	 */
 	async createAppointment(createAppointmentDto: CreateAppointmentDto) {
+		// Validate input
+		if (!createAppointmentDto.date || !createAppointmentDto.time) {
+			throw new Error('Date and time are required');
+		}
+
+		const appointmentDate = new Date(createAppointmentDto.date);
+		const appointmentTime = createAppointmentDto.time;
+
+		// Validate date format
+		if (isNaN(appointmentDate.getTime())) throw new Error('Invalid date format');
+
+		// Validate time format
+		const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+		if (!timeRegex.test(appointmentTime)) throw new Error('Invalid time format. Use HH:MM');
+
+		// Check if the appointment date is in the future
+		const currentDate = new Date();
+		if (appointmentDate < currentDate) throw new Error('Appointment date must be in the future');
+
+		// Check for day off
+		const daysOff = await this.configService.getDaysOff(appointmentDate, appointmentDate);
+		if (daysOff.length > 0) throw new Error('Cannot create appointment on a day off');
+
+		// Check for unavailable hours
+		const unavailableHours = await this.configService.getUnavailableHours(appointmentDate.getDay());
+		const isUnavailable = unavailableHours.some(uh => {
+			const appointmentDateTime = new Date(`${createAppointmentDto.date}T${appointmentTime}`);
+			const startTime = new Date(`${createAppointmentDto.date}T${uh.startTime}`);
+			const endTime = new Date(`${createAppointmentDto.date}T${uh.endTime}`);
+			return appointmentDateTime >= startTime && appointmentDateTime < endTime;
+		});
+		if (isUnavailable) throw new Error('Cannot create appointment during unavailable hours');
+
 		const maxSlotsPerAppointment = await this.configService.get('maxSlotsPerAppointment')
 		const slot = await this.slotService.getSlot(createAppointmentDto.date, createAppointmentDto.time)
 
-		if (!slot || slot.availableSlots === 0) {
-			throw new Error('Slot is not available')
-		}
+		if (!slot) throw new Error('Slot is not available, please generate slots first')
 
-		if (slot.availableSlots < maxSlotsPerAppointment) {
-			throw new Error('Not enough available slots for this appointment')
-		}
+		if (slot.availableSlots === 0) throw new Error('No available slots for this appointment')
 
 		const appointment = new Appointment()
 		appointment.date = new Date(`${createAppointmentDto.date}T${createAppointmentDto.time}`)

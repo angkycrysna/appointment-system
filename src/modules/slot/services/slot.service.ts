@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, Between } from 'typeorm'
 import { Slot } from '../entities/slot.entity'
+import { ConfigService } from 'src/modules/config/services/config.service'
+
 
 @Injectable()
 export class SlotService {
 	constructor(
 		@InjectRepository(Slot)
 		private slotRepository: Repository<Slot>,
+		private configService: ConfigService,
 	) {}
 
 	/**
@@ -29,6 +32,7 @@ export class SlotService {
 
 		const slots = await this.slotRepository.find({
 			where: {
+				date: selectedDate,
 				time: Between(startTime, endTime),
 			},
 			order: {
@@ -37,7 +41,7 @@ export class SlotService {
 		})
 
 		if (slots.length === 0) {
-			const generatedSlots = this.generateSlots(startTime, endTime, duration)
+			const generatedSlots = await this.generateSlots(selectedDate, startTime, endTime, duration)
 			await this.slotRepository.save(generatedSlots)
 			return generatedSlots
 		}
@@ -50,7 +54,7 @@ export class SlotService {
 	 * Time complexity: O(1) as it uses the findOne method from the repository.
 	 */
 	async getSlot(date: string, time: string): Promise<Slot> {
-		return this.slotRepository.findOne({ where: { time } })
+		return this.slotRepository.findOne({ where: { time, date: new Date(date) } })
 	}
 
 	/**
@@ -58,7 +62,7 @@ export class SlotService {
 	 * Time complexity: O(1) for subtraction and saving operations.
 	 */
 	async decrementAvailableSlots(slot: Slot, amount: number): Promise<void> {
-		slot.availableSlots -= amount
+		slot.availableSlots--
 		await this.slotRepository.save(slot)
 	}
 
@@ -73,23 +77,26 @@ export class SlotService {
 	}
 
 	/**
-	 * Create new slots based on start time, end time, and duration.
+	 * Create new slots based on date, start time, end time, and duration.
 	 * Time complexity: O(n) where n is the number of slots created.
 	 */
-	private generateSlots(startTime: string, endTime: string, duration: number): Slot[] {
-		const slots: Slot[] = []
-		const currentTime = new Date(`1970-01-01T${startTime}`)
-		const endDateTime = new Date(`1970-01-01T${endTime}`)
-
+	private async generateSlots(date: Date, startTime: string, endTime: string, duration: number): Promise<Slot[]> {
+		const slots: Slot[] = [];
+		const currentDate = new Date(date);
+		let currentTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTime}`);
+		const endDateTime = new Date(`${currentDate.toISOString().split('T')[0]}T${endTime}`);
+		const maxSlotsPerAppointment = await this.configService.get('maxSlotsPerAppointment')
+	
 		while (currentTime < endDateTime) {
-			const slot = new Slot()
-			slot.time = currentTime.toTimeString().slice(0, 5)
-			slot.availableSlots = 1
-			slots.push(slot)
-
-			currentTime.setMinutes(currentTime.getMinutes() + duration)
+		  const slot = new Slot();
+		  slot.date = new Date(currentDate);
+		  slot.time = currentTime.toTimeString().slice(0, 5);
+		  slot.availableSlots = maxSlotsPerAppointment;
+		  slots.push(slot);
+	
+		  currentTime.setMinutes(currentTime.getMinutes() + duration);
 		}
-
-		return slots
-	}
+	
+		return slots;
+	  }
 }
