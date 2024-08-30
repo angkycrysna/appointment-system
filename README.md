@@ -74,6 +74,91 @@ $ yarn run start:dev
 # production mode
 $ yarn run start:prod
 
+## API Usage
+
+### Appointments
+
+1. Get Available Slots
+   - Method: GET
+   - Endpoint: `/appointments/available-slots/:date`
+   - Example: `GET /appointments/available-slots/2024-04-04`
+   - Response:
+     ```json
+     [
+       {
+         "date": "2024-04-04",
+         "time": "10:00",
+         "available_slots": 1
+       },
+       {
+         "date": "2024-04-04",
+         "time": "10:30",
+         "available_slots": 1
+       }
+     ]
+     ```
+
+2. Book an Appointment
+   - Method: POST
+   - Endpoint: `/appointments`
+   - Body:
+     ```json
+     {
+       "date": "2024-04-04",
+       "time": "10:00"
+     }
+     ```
+   - Response: Created appointment object
+
+3. Cancel an Appointment
+   - Method: DELETE
+   - Endpoint: `/appointments/:id`
+   - Example: `DELETE /appointments/1`
+   - Response: 204 No Content
+
+### Configuration
+
+1. Set Day Off
+   - Method: POST
+   - Endpoint: `/config/days-off`
+   - Body:
+     ```json
+     {
+       "date": "2024-12-25",
+       "description": "Christmas Day"
+     }
+     ```
+   - Response: Created day off object
+
+2. Set Unavailable Hours
+   - Method: POST
+   - Endpoint: `/config/unavailable-hours`
+   - Body:
+     ```json
+     {
+       "dayOfWeek": 1,
+       "startTime": "12:00",
+       "endTime": "13:00",
+       "description": "Lunch Break"
+     }
+     ```
+   - Response: Created unavailable hour object
+
+3. Get Configuration
+   - Method: GET
+   - Endpoint: `/config`
+   - Response: Current configuration including operational hours, slot duration, etc.
+
+### Slots
+
+1. Get All Slots for a Date
+   - Method: GET
+   - Endpoint: `/slots/:date`
+   - Example: `GET /slots/2024-04-04`
+   - Response: Array of slot objects for the given date
+
+Note: Replace `:date` and `:id` with actual values when making requests. Ensure you're running the application and connected to the database before testing these endpoints.
+
 
 ## Support
 

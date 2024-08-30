@@ -1,3 +1,14 @@
+/**
+ * Initializes the configuration settings for the appointment system.
+ * This method connects to the database, creates default configuration entries,
+ * and saves them to the Config table.
+ * 
+ * Time Complexity: O(n), where n is the number of config entries
+ * - Database connection: O(1)
+ * - Iterating through configs array: O(n)
+ * - Saving each config: O(1) per save operation
+ * - Closing connection: O(1)
+ */
 import { createConnection } from 'typeorm'
 import { Config } from '../modules/config/entities/config.entity'
 
