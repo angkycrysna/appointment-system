@@ -49,6 +49,11 @@ export class SlotService {
 		await this.slotRepository.save(slot)
 	}
 
+	async incrementAvailableSlots(slot: Slot): Promise<void> {
+		slot.availableSlots++;
+		await this.slotRepository.save(slot);
+	  }
+
 	private generateSlots(startTime: string, endTime: string, duration: number): Slot[] {
 		const slots: Slot[] = []
 		const currentTime = new Date(`1970-01-01T${startTime}`)

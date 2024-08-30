@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Appointment } from '../entities/appointment.entity'
@@ -54,4 +54,14 @@ export class AppointmentService {
 		await this.slotService.decrementAvailableSlots(slot, maxSlotsPerAppointment)
 		return this.appointmentRepository.save(appointment)
 	}
+
+	async cancelAppointment(id: number): Promise<void> {
+		const appointment = await this.appointmentRepository.findOne({ where: { id }, relations: ['slot'] });
+		if (!appointment) {
+		  throw new NotFoundException('Appointment not found');
+		}
+	
+		await this.slotService.incrementAvailableSlots(appointment.slot);
+		await this.appointmentRepository.remove(appointment);
+	  }
 }

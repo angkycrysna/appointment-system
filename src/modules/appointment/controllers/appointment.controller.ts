@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, HttpException, HttpStatus, HttpCode, Delete } from '@nestjs/common'
 import { AppointmentService } from '../services/appointment.service'
 import { CreateAppointmentDto } from 'src/dtos/appointments/create-appointment.dto'
 
@@ -18,5 +18,11 @@ export class AppointmentController {
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
 		}
+	}
+
+	@Delete(':id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async cancelAppointment(@Param('id') id: string) {
+		await this.appointmentService.cancelAppointment(parseInt(id, 10));
 	}
 }
